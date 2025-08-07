@@ -246,8 +246,6 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
-  require 'kickstart.plugins.neo-tree',
-  require 'kickstart.plugins.gitsigns',
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
 
@@ -794,10 +792,10 @@ require('lazy').setup({
       },
     },
   },
-
   { -- Autocompletion
     'saghen/blink.cmp',
-    event = 'VimEnter',
+    -- event = 'VimEnter',
+    event = 'InsertEnter',
     version = '1.*',
     dependencies = {
       -- Snippet Engine
@@ -825,6 +823,31 @@ require('lazy').setup({
           -- },
         },
         opts = {},
+        -- event = 'InsertEnter',
+        -- custom config to define snip files
+        config = function()
+          require('luasnip.loaders.from_lua').lazy_load { paths = { './lua/custom/luasnip/' } }
+          local ls = require 'luasnip'
+          ls.setup {
+            update_events = { 'TextChanged', 'TextChangedI' },
+            enable_autosnippets = true,
+            store_selection_keys = '<Tab>',
+          }
+          vim.keymap.set({ 'i' }, '<C-k>', function()
+            ls.expand {}
+          end, { silent = true, desc = 'expand autocomplete' })
+          vim.keymap.set({ 'i', 's' }, '<C-j>', function()
+            ls.jump(1)
+          end, { silent = true, desc = 'next autocomplete' })
+          vim.keymap.set({ 'i', 's' }, '<C-L>', function()
+            ls.jump(-1)
+          end, { silent = true, desc = 'previous autocomplete' })
+          vim.keymap.set({ 'i', 's' }, '<C-E>', function()
+            if ls.choice_active() then
+              ls.change_choice(1)
+            end
+          end, { silent = true, desc = 'select autocomplete' })
+        end,
       },
       'folke/lazydev.nvim',
     },
@@ -991,18 +1014,18 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
