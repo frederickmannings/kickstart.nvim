@@ -704,6 +704,22 @@ require('lazy').setup({
             },
           },
         },
+        -- LaTeX
+        texlab = {
+          settings = {
+            texlab = {
+              build = {
+                executable = 'latexmk',
+                args = { '-pdf', '-interaction=nonstopmode', '-synctex=1', '%f' },
+                onSave = true,
+              },
+              forwardSearch = {
+                executable = 'zathura', -- or your preferred PDF viewer
+                args = { '--synctex-forward', '%l:1:%f', '%p' },
+              },
+            },
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -732,6 +748,9 @@ require('lazy').setup({
         'lua-language-server',
         'tailwindcss-language-server',
         'typescript-language-server',
+        'texlab',
+        'latexindent',
+        'markdownlint',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -784,6 +803,7 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        tex = { 'latexindent' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -794,8 +814,7 @@ require('lazy').setup({
   },
   { -- Autocompletion
     'saghen/blink.cmp',
-    -- event = 'VimEnter',
-    event = 'InsertEnter',
+    event = 'VimEnter',
     version = '1.*',
     dependencies = {
       -- Snippet Engine
@@ -813,40 +832,20 @@ require('lazy').setup({
         end)(),
         dependencies = {
           -- `friendly-snippets` contains a variety of premade snippets.
-          --    See the README about individual language/framework/plugin snippets:
+          --    SecopeFuzzyCommandSearch) the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
         opts = {},
         -- event = 'InsertEnter',
         -- custom config to define snip files
         config = function()
           require('luasnip.loaders.from_lua').lazy_load { paths = { './lua/custom/luasnip/' } }
-          local ls = require 'luasnip'
-          ls.setup {
-            update_events = { 'TextChanged', 'TextChangedI' },
-            enable_autosnippets = true,
-            store_selection_keys = '<Tab>',
-          }
-          vim.keymap.set({ 'i' }, '<C-k>', function()
-            ls.expand {}
-          end, { silent = true, desc = 'expand autocomplete' })
-          vim.keymap.set({ 'i', 's' }, '<C-j>', function()
-            ls.jump(1)
-          end, { silent = true, desc = 'next autocomplete' })
-          vim.keymap.set({ 'i', 's' }, '<C-L>', function()
-            ls.jump(-1)
-          end, { silent = true, desc = 'previous autocomplete' })
-          vim.keymap.set({ 'i', 's' }, '<C-E>', function()
-            if ls.choice_active() then
-              ls.change_choice(1)
-            end
-          end, { silent = true, desc = 'select autocomplete' })
         end,
       },
       'folke/lazydev.nvim',
