@@ -711,7 +711,19 @@ require('lazy').setup({
         gopls = {},
         svelte = {},
         tailwindcss = {},
-        -- pyright = {},
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                typeCheckingMode = 'strict',
+                autoImportCompletions = true,
+                useLibraryCodeForTypes = true,
+              },
+              pythonPath = vim.fn.getcwd() .. '/.venv/bin/python',
+              venvPath = vim.fn.getcwd() .. '/.venv',
+            },
+          },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -769,18 +781,6 @@ require('lazy').setup({
           rootDirectory = function(fname)
             return require('lspconfig.util').root_pattern('.latexmkrc', '.git', 'main.tex', '*.tex')(fname)
           end,
-        },
-        -- Python servers
-        pyright = {
-          settings = {
-            python = {
-              analysis = {
-                typeCheckingMode = 'strict',
-                autoImportCompletions = true,
-                useLibraryCodeForTypes = true,
-              },
-            },
-          },
         },
       }
 
@@ -870,11 +870,19 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         tex = { 'latexindent' },
-        python = { 'ruff_format' },
+        python = { 'ruff_format', 'ruff_fix' },
         -- Conform can also run multiple formatters sequentially
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
+      },
+      -- custom fix command that will pick up any isort level fixes in the local pyproject.toml
+      formatters = {
+        ruff_fix = {
+          command = 'ruff',
+          args = { 'check', '--fix', '--stdin-filename', '$FILENAME', '-' },
+          stdin = true,
+        },
       },
     },
   },
