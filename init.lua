@@ -239,6 +239,18 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
   desc = 'Enable spellcheck for defined filetypes', -- Description for clarity
 })
 
+-- LaTeX-specific text wrapping
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'tex',
+  callback = function()
+    vim.opt_local.textwidth = 80 -- Set line width to 80 characters
+    vim.opt_local.wrap = true -- Enable visual line wrapping
+    vim.opt_local.linebreak = true -- Break at word boundaries
+    vim.opt_local.formatoptions:append 't' -- Auto-wrap text using textwidth
+  end,
+  desc = 'LaTeX text formatting settings',
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -746,6 +758,7 @@ require('lazy').setup({
               },
               latexFormatter = 'latexindent',
               latexindent = {
+                onSave = true,
                 modifyLineBreaks = false,
               },
               -- multi file support settings
@@ -756,6 +769,18 @@ require('lazy').setup({
           rootDirectory = function(fname)
             return require('lspconfig.util').root_pattern('.latexmkrc', '.git', 'main.tex', '*.tex')(fname)
           end,
+        },
+        -- Python servers
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                typeCheckingMode = 'strict',
+                autoImportCompletions = true,
+                useLibraryCodeForTypes = true,
+              },
+            },
+          },
         },
       }
 
@@ -788,6 +813,10 @@ require('lazy').setup({
         'texlab',
         'latexindent',
         'markdownlint',
+        -- python
+        'pyright',
+        'ruff',
+        'mypy',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -841,8 +870,8 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         tex = { 'latexindent' },
+        python = { 'ruff_format' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -1021,7 +1050,23 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go', 'svelte', 'typescript' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'go',
+        'svelte',
+        'typescript',
+        'python',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {

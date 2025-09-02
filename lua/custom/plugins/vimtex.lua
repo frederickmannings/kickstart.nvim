@@ -46,8 +46,8 @@ return {
     }
 
     -- Folding
-    vim.g.vimtex_fold_enabled = 1
-    vim.g.vimtex_fold_manual = 1
+    vim.g.vimtex_fold_enabled = 0
+    vim.g.vimtex_fold_manual = 0
 
     -- Completion
     vim.g.vimtex_complete_enabled = 1
@@ -67,5 +67,20 @@ return {
     vim.keymap.set('n', '<localleader>le', '<plug>(vimtex-errors)', { desc = 'VimTeX: Show Errors' })
     vim.keymap.set('n', '<localleader>lc', '<plug>(vimtex-clean)', { desc = 'VimTeX: Clean' })
     vim.keymap.set('n', '<localleader>lC', '<plug>(vimtex-clean-full)', { desc = 'VimTeX: Clean Full' })
+
+    -- Auto format whole file with gq on save
+    -- vim.api.nvim_create_autocmd('BufWritePre', {
+    --   pattern = { '*.tex', '*.bib' },
+    --   callback = function()
+    --     -- Save current cursor position
+    --     local cursor_pos = vim.api.nvim_win_get_cursor(0)
+    --
+    --     -- Format entire buffer
+    --     vim.cmd 'keepjumps normal! ggVGgq'
+    --
+    --     -- Restore cursor position
+    --     pcall(vim.api.nvim_win_set_cursor, 0, cursor_pos)
+    --   end,
+    -- })
   end,
 }
