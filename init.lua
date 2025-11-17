@@ -266,6 +266,12 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
+--- Set tab stop to be more sensible than the default
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.expandtab = true
+vim.o.softtabstop = 4
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -713,6 +719,7 @@ require('lazy').setup({
         gopls = {},
         svelte = {},
         tailwindcss = {},
+        ruff = {},
         jedi_language_server = {
           settings = {
             workspace = {
@@ -885,13 +892,33 @@ require('lazy').setup({
         -- Conform can also run multiple formatters sequentially
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        svelte = { 'prettierd', 'prettier', stop_after_first = true },
+        css = { 'prettierd', 'prettier', stop_after_first = true },
+        scss = { 'prettierd', 'prettier', stop_after_first = true },
+        json = { 'prettierd', 'prettier', stop_after_first = true },
+        jsonc = { 'prettierd', 'prettier', stop_after_first = true },
       },
       -- custom fix command that will pick up any isort level fixes in the local pyproject.toml
       formatters = {
         ruff_fix = {
           command = 'ruff',
           args = { 'check', '--fix', '--stdin-filename', '$FILENAME', '-' },
+          stdin = true,
+        },
+        prettier = {
+          command = 'prettier',
+          args = {
+            '--stdin-filepath',
+            '$FILENAME',
+            '--plugin',
+            'prettier-plugin-svelte',
+            '--plugin',
+            'prettier-plugin-tailwindcss',
+          },
           stdin = true,
         },
       },
